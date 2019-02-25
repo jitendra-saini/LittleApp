@@ -59,7 +59,7 @@
             android:layout_toLeftOf="@id/btn_send"
             android:layout_width="match_parent"
             android:hint="Type a Message"
-            android:textSize="30sp"
+
             android:layout_height="wrap_content"
             />
 
@@ -67,7 +67,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/btn_send"
-            android:src="@drawable/ic_action_name"
+            android:src="@drawable/ic_send_black_24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             />
