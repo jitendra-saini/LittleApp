@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -88,7 +89,7 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
                     profile_image.setImageResource(R.mipmap.ic_launcher_round);
 
                 }else {
-                    Glide.with(HomeActivity.this).load(user1.getImageURl()).into(profile_image);
+                    Glide.with(getApplicationContext()).load(user1.getImageURl()).into(profile_image);
 
                 }
 
@@ -179,9 +180,9 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
        {
            case R.id.logout:
                FirebaseAuth.getInstance().signOut();
-               startActivity(new Intent(HomeActivity.this,MainActivity.class));
+               startActivity(new Intent(HomeActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
-                finish();
+
 
               return true;
        }
@@ -231,5 +232,30 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
             mFragmentList.add(fragment);
         }
 
+    }
+
+
+    private void status(String status){
+
+        reference=FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        hashMap.put("status",status);
+        reference.updateChildren(hashMap);
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+          status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+         status("offline");
     }
 }

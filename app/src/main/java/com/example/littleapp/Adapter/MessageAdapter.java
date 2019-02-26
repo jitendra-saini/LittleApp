@@ -64,6 +64,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
                Glide.with(context).load(imageurl).into(myViewHolder.circleImageView);
            }
+
+           if(i==mChat.size()-1){
+               if(chat.getSeen()){
+                   myViewHolder.text_seen.setText("seen");
+
+               }else {
+                   myViewHolder.text_seen.setText("delivered");
+               }
+           }else {
+               myViewHolder.text_seen.setVisibility(View.GONE);
+           }
     }
 
     @Override
@@ -74,14 +85,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         CircleImageView circleImageView;
-        TextView show_message;
+        TextView show_message,text_seen;
+
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             circleImageView=itemView.findViewById(R.id.profile_image);
             show_message=itemView.findViewById(R.id.show_message);
-
+            text_seen=itemView.findViewById(R.id.txt_seen);
         }
     }
 

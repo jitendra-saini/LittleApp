@@ -32,6 +32,18 @@
         android:layout_toLeftOf="@id/profile_image"
 
         android:textColor="#ffffff"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="seen"
+
+        android:layout_below="@id/show_message"
+        android:textColor="#603A3A39"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/txt_seen"/>
+
+
 </RelativeLayout>
 
 

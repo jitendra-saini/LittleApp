@@ -6,14 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Users">
 
-
-    <android.support.v7.widget.RecyclerView
+    <EditText
+        android:id="@+id/seaarch_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginStart="4dp"
+        android:hint="search... "
+        app:layout_constraintStart_toEndOf="@+id/recycler_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+                 android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="10dp"
-        android:id="@+id/recycler_view"></android.support.v7.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/seaarch_bar"></android.support.v7.widget.RecyclerView>
 
 
 </android.support.constraint.ConstraintLayout>

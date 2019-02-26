@@ -7,12 +7,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.littleapp.Adapter.UserAdapter;
 import com.example.littleapp.Model.Chat;
+import com.example.littleapp.Model.Chatlist;
 import com.example.littleapp.Model.User;
 import com.example.littleapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +38,7 @@ public class Chats extends Fragment {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
 
-    private List<String> userlist;
+    private List<Chatlist> userlist;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,32 +62,17 @@ public class Chats extends Fragment {
 
         userlist=new ArrayList<>();
 
-
-        reference= FirebaseDatabase.getInstance().getReference("chats");
-
+        reference=FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 userlist.clear();
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot:dataSnapshot.getChildren()){
 
-                    Chat chat=snapshot.getValue(Chat.class);
-                    if(chat.getSender().equals(firebaseUser.getUid())){
-
-
-                        userlist.add(chat.getReceiver());
-
-                    }if (chat.getReceiver().equals(firebaseUser.getUid())){
-
-
-                        userlist.add(chat.getSender());
-
-                    }
-
-
+                    Chatlist chatlist=snapshot.getValue(Chatlist.class);
+                    userlist.add(chatlist);
                 }
-                readChats();
+                           chatlist();
             }
 
             @Override
@@ -99,48 +86,29 @@ public class Chats extends Fragment {
 
     }
 
-
-    private void readChats(){
-
-
+    private void chatlist() {
+        Log.e("ChatsFragment","I am in");
 
         mUsers=new ArrayList<>();
-
-
         reference=FirebaseDatabase.getInstance().getReference("Users");
-
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 mUsers.clear();
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                Log.e("ChatsFragment","I a");
 
+                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    Log.e("ChatsFragment","I am in");
                     User user=snapshot.getValue(User.class);
-
-                    for(String id : userlist){
-
-
-                        if(user.getId().equals(id)){
-
-                            if(mUsers.size()!=0){
-
-                                for(User user1 : mUsers){
-                                    if(!user.getId().equals(user1.getId())){
-                                        mUsers.add(user);
-                                    }
-                                }
-                            }else {
-                                mUsers.add(user);
-                            }
+                    for(Chatlist chtlist : userlist){
+                        Log.e("ChatsFragment","I ");
+                        if(user.getId().equals(chtlist.getId())){
+                            Log.e("ChatsFragment","I am ");
+                            mUsers.add(user);
                         }
                     }
-
-
-                }
-
-                userAdapter= new UserAdapter(getContext(),mUsers);
+                } Log.e("ChatsFragment","I ");
+                userAdapter=new UserAdapter(getContext(),mUsers,true);
                 recyclerView.setAdapter(userAdapter);
             }
 
@@ -150,6 +118,5 @@ public class Chats extends Fragment {
             }
         });
     }
-   
 
 }

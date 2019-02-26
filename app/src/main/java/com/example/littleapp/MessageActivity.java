@@ -1,6 +1,7 @@
 package com.example.littleapp;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,6 +46,8 @@ public class MessageActivity extends AppCompatActivity {
     MessageAdapter messageAdapter;
     RecyclerView recyclerView;
     List<Chat> mChat;
+    ValueEventListener seenListener;
+    String userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +62,7 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                startActivity(new Intent(MessageActivity.this,HomeActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         });
 
@@ -77,10 +80,9 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
-
         intent=getIntent();
 
-        final String userid=intent.getStringExtra("user_id");
+        userid=intent.getStringExtra("user_id");
         send_Image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,7 +116,7 @@ public class MessageActivity extends AppCompatActivity {
                     circleImageView.setImageResource(R.mipmap.ic_launcher_round);
 
                 }else {
-                    Glide.with(MessageActivity.this).load(user1.getImageURl()).into(circleImageView);
+                    Glide.with(getApplicationContext()).load(user1.getImageURl()).into(circleImageView);
 
                 }
                 readMessage(firebaseUser.getUid(),userid,user1.getImageURl());
@@ -126,9 +128,38 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
-
+           seenMessage(userid);
     }
 
+    private void seenMessage(final String userid){
+
+
+        reference=FirebaseDatabase.getInstance().getReference("chats");
+
+        seenListener=reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                   Chat chat=snapshot.getValue(Chat.class);
+                   if(chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)){
+
+                       HashMap<String,Object> hashMap=new HashMap<>();
+                       hashMap.put("isSeen",true);
+                       snapshot.getRef().updateChildren(hashMap);
+
+                   }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     private void sendMessage(String sender,String receiver,String message){
 
@@ -140,10 +171,29 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
-
+        hashMap.put("isSeen",false);
         reference.child("chats").push().setValue(hashMap);
 
 
+        final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(firebaseUser.getUid())
+                .child(userid);
+
+
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+
+                    chatRef.child("id").setValue(userid);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -177,5 +227,30 @@ public class MessageActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void status(String status){
+
+        reference=FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        hashMap.put("status",status);
+        reference.updateChildren(hashMap);
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        reference.removeEventListener(seenListener);
+        status("offline");
     }
 }
