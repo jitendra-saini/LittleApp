@@ -16,5 +16,5 @@
     <item
         android:title="users"
         android:id="@+id/settings"
-        android:icon="@drawable/ic_settings_deep_orange_a200_36dp"/>
+        android:icon="@drawable/ic_person_add_black_24dp"/>
 </menu>

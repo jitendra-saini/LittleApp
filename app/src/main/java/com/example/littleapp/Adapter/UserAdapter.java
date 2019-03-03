@@ -37,7 +37,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
    private List<User> mUser;
    private Boolean isChat;
    private String theLastMessage;
-
+    FirebaseUser firebaseUser;
+    DatabaseReference reference;
     public UserAdapter(Context context, List<User> mUser,Boolean isChat) {
         this.context = context;
         this.mUser = mUser;
@@ -118,8 +119,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
 
         theLastMessage="default";
 
-        final FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("chats");
+        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+       reference= FirebaseDatabase.getInstance().getReference("chats");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -127,6 +128,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
 
                     Chat chat =snapshot.getValue(Chat.class);
+
                     if(chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                             chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())){
 

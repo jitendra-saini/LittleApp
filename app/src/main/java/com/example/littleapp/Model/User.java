@@ -7,12 +7,16 @@ public class User {
     private String imageURl;
     private String username;
     private String status;
+    private Chatlist chatlist;
 
-    public User(String id, String imageURl, String username, String status) {
+
+    public User(String id, String imageURl, String username, String status,Chatlist chatlist) {
         this.id = id;
         this.imageURl = imageURl;
         this.username = username;
         this.status = status;
+        this.chatlist=chatlist;
+
     }
 
     public User() {
@@ -48,5 +52,13 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Chatlist getChatlist() {
+        return chatlist;
+    }
+
+    public void setChatlist(Chatlist chatlist) {
+        this.chatlist = chatlist;
     }
 }

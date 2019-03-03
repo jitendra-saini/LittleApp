@@ -80,26 +80,6 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
-        intent=getIntent();
-
-        userid=intent.getStringExtra("user_id");
-        send_Image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String msg=textToBeSend.getText().toString();
-                if(!msg.equals("")){
-
-
-                    sendMessage(firebaseUser.getUid(),userid,msg);
-                }else{
-
-                    Toast.makeText(MessageActivity.this,"you can't sent empty message",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-
         firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
         reference= FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
@@ -128,6 +108,26 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+        intent=getIntent();
+
+        userid=intent.getStringExtra("user_id");
+        send_Image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg=textToBeSend.getText().toString();
+                if(!msg.equals("")){
+                    sendMessage(firebaseUser.getUid(),userid,msg);
+                }else{
+
+                    Toast.makeText(MessageActivity.this,"you can't sent empty message",Toast.LENGTH_SHORT).show();
+                }
+                textToBeSend.setText("");
+                textToBeSend.setHint("type here");
+            }
+        });
+
+
+
            seenMessage(userid);
     }
 
@@ -172,12 +172,16 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
         hashMap.put("isSeen",false);
+
+
         reference.child("chats").push().setValue(hashMap);
 
 
-        final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Chatlist")
+        final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Users")
                 .child(firebaseUser.getUid())
-                .child(userid);
+                .child("chatList");
+
+
 
 
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
